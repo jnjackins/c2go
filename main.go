@@ -120,7 +120,7 @@ func ToJSON(tree []interface{}) []map[string]interface{} {
 	return r
 }
 
-func translate(path string) {
+func translate(path string) string {
 
 	// Preprocess
 
@@ -187,7 +187,7 @@ func translate(path string) {
 
 	render(&goBuf, tree[0], "", 0, "")
 
-	io.Copy(os.Stdout, &goBuf)
+	return goBuf.String()
 }
 
 func main() {
@@ -205,5 +205,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	translate(flag.Arg(0))
+	fmt.Println(translate(flag.Arg(0)))
 }

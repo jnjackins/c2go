@@ -53,7 +53,7 @@ func TestIntegrationScripts(t *testing.T) {
 			cProgram.isZero = err == nil
 
 			// Compile Go
-			goSrc := Start([]string{file})
+			goSrc := translate(file)
 			ioutil.WriteFile("build/main.go", []byte(goSrc), os.ModePerm)
 			err = exec.Command("go", "build", "-o", goPath, "build/main.go").Run()
 			if err != nil {
