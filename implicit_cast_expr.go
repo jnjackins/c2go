@@ -23,6 +23,6 @@ func parseImplicitCastExpr(line string) *ImplicitCastExpr {
 	}
 }
 
-func (n *ImplicitCastExpr) Render() []string {
+func (n *ImplicitCastExpr) render() []string {
 	return renderExpression(n.Children[0])
 }

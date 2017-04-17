@@ -1,6 +1,6 @@
 package main
 
-import "bytes"
+import "io"
 
 type ReturnStmt struct {
 	Address  string
@@ -21,7 +21,7 @@ func parseReturnStmt(line string) *ReturnStmt {
 	}
 }
 
-func (n *ReturnStmt) RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string) {
+func (n *ReturnStmt) renderLine(w io.Writer, functionName string, indent int, returnType string) {
 	r := "return"
 
 	if len(n.Children) > 0 && functionName != "main" {
@@ -29,5 +29,5 @@ func (n *ReturnStmt) RenderLine(out *bytes.Buffer, functionName string, indent i
 		r = "return " + cast(re[0], re[1], "int")
 	}
 
-	printLine(out, r, indent)
+	printLine(w, r, indent)
 }

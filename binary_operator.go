@@ -25,7 +25,7 @@ func parseBinaryOperator(line string) *BinaryOperator {
 	}
 }
 
-func (n *BinaryOperator) Render() []string {
+func (n *BinaryOperator) render() []string {
 	operator := n.Operator
 
 	left := renderExpression(n.Children[0])

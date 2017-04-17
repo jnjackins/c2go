@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -48,7 +48,7 @@ func parseTypedefDecl(line string) *TypedefDecl {
 	}
 }
 
-func (n *TypedefDecl) RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string) {
+func (n *TypedefDecl) renderLine(w io.Writer, functionName string, indent int, returnType string) {
 	name := strings.TrimSpace(n.Name)
 	if typeIsAlreadyDefined(name) {
 		return
@@ -80,5 +80,5 @@ func (n *TypedefDecl) RenderLine(out *bytes.Buffer, functionName string, indent 
 		return
 	}
 
-	printLine(out, fmt.Sprintf("type %s %s\n", name, resolved_type), indent)
+	printLine(w, fmt.Sprintf("type %s %s\n", name, resolved_type), indent)
 }

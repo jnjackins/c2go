@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strings"
@@ -117,33 +120,52 @@ func ToJSON(tree []interface{}) []map[string]interface{} {
 	return r
 }
 
-func Check(e error) {
-	if e != nil {
-		panic(e)
+func translate(path string) {
+
+	// Preprocess
+
+	tmp, err := ioutil.TempDir("", "c2go")
+	if err != nil {
+		log.Fatal(err)
 	}
-}
+	defer os.RemoveAll(tmp)
 
-func Start(args []string) string {
-	if os.Getenv("GOPATH") == "" {
-		panic("The $GOPATH must be set.")
+	pp, err := os.Create(filepath.Join(tmp, "pp.c"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer pp.Close()
+
+	args := strings.Fields(os.Getenv("CFLAGS"))
+	args = append(args, "-E", path)
+	ppCmd := exec.Command("clang", args...)
+	ppCmd.Stdout = pp
+
+	var errBuf bytes.Buffer
+	ppCmd.Stderr = &errBuf
+
+	if err := ppCmd.Run(); err != nil {
+		io.Copy(os.Stderr, &errBuf)
+		log.Fatal(err)
+	}
+	pp.Close()
+
+	// Generate AST
+
+	args = strings.Fields(os.Getenv("CFLAGS"))
+	args = append(args, "-Xclang", "-ast-dump", "-fsyntax-only", pp.Name())
+	astCmd := exec.Command("clang", args...)
+	var astBuf bytes.Buffer
+	astCmd.Stdout = &astBuf
+	errBuf.Reset()
+	astCmd.Stderr = &errBuf
+
+	if err := astCmd.Run(); err != nil {
+		io.Copy(os.Stderr, &errBuf)
+		log.Fatal(err)
 	}
 
-	// 1. Compile it first (checking for errors)
-	cFilePath := args[0]
-
-	// 2. Preprocess
-	pp, err := exec.Command("clang", "-E", cFilePath).Output()
-	Check(err)
-
-	pp_file_path := "/tmp/pp.c"
-	err = ioutil.WriteFile(pp_file_path, pp, 0644)
-	Check(err)
-
-	// 3. Generate JSON from AST
-	ast_pp, err := exec.Command("clang", "-Xclang", "-ast-dump", "-fsyntax-only", pp_file_path).Output()
-	Check(err)
-
-	lines := readAST(ast_pp)
+	lines := readAST(astBuf.Bytes())
 	if *printAst {
 		for _, l := range lines {
 			fmt.Println(l)
@@ -153,31 +175,25 @@ func Start(args []string) string {
 	nodes := convertLinesToNodes(lines)
 	tree := buildTree(nodes, 0)
 
-	// TODO: allow the user to print the JSON tree:
-	//jsonTree := ToJSON(tree)
-	//_, err := json.MarshalIndent(jsonTree, " ", "  ")
-	//Check(err)
+	var goBuf bytes.Buffer
 
-	// 3. Parse C and output Go
-	//parts := strings.Split(cFilePath, "/")
-	//go_file_path := fmt.Sprintf("%s.go", parts[len(parts) - 1][:len(parts) - 2])
-	go_out := bytes.NewBuffer([]byte{})
+	// Generate Go code from AST
 
-	Render(go_out, tree[0], "", 0, "")
-
-	// Put together the whole file
-	all := "package main\n\nimport (\n"
-
+	fmt.Fprint(&goBuf, "package main\n\nimport (\n")
 	for _, importName := range Imports {
-		all += fmt.Sprintf("\t\"%s\"\n", importName)
+		fmt.Fprintf(&goBuf, "\t\"%s\"\n", importName)
 	}
+	fmt.Fprintf(&goBuf, ")\n\n")
 
-	all += ")\n\n" + go_out.String()
+	render(&goBuf, tree[0], "", 0, "")
 
-	return all
+	io.Copy(os.Stdout, &goBuf)
 }
 
 func main() {
+	log.SetFlags(0)
+	log.SetPrefix("c2go: ")
+
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s <file.c>\n", os.Args[0])
 		flag.PrintDefaults()
@@ -188,5 +204,6 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
-	fmt.Print(Start(flag.Args()))
+
+	translate(flag.Arg(0))
 }

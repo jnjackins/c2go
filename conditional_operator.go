@@ -23,7 +23,7 @@ func parseConditionalOperator(line string) *ConditionalOperator {
 	}
 }
 
-func (n *ConditionalOperator) Render() []string {
+func (n *ConditionalOperator) render() []string {
 	a := renderExpression(n.Children[0])[0]
 	b := renderExpression(n.Children[1])[0]
 	c := renderExpression(n.Children[2])[0]

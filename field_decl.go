@@ -36,7 +36,7 @@ func parseFieldDecl(line string) *FieldDecl {
 	}
 }
 
-func (n *FieldDecl) Render() []string {
+func (n *FieldDecl) render() []string {
 	fieldType := resolveType(n.Type)
 	name := strings.Replace(n.Name, "used", "", -1)
 

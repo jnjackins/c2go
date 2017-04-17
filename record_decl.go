@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -50,7 +50,7 @@ func parseRecordDecl(line string) *RecordDecl {
 	}
 }
 
-func (n *RecordDecl) RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string) {
+func (n *RecordDecl) renderLine(w io.Writer, functionName string, indent int, returnType string) {
 	name := strings.TrimSpace(n.Name)
 	if name == "" || typeIsAlreadyDefined(name) {
 		return
@@ -62,12 +62,12 @@ func (n *RecordDecl) RenderLine(out *bytes.Buffer, functionName string, indent i
 		return
 	}
 
-	printLine(out, fmt.Sprintf("type %s %s {", name, n.Kind), indent)
+	printLine(w, fmt.Sprintf("type %s %s {", name, n.Kind), indent)
 	if len(n.Children) > 0 {
 		for _, c := range n.Children {
-			Render(out, c, functionName, indent+1, "")
+			render(w, c, functionName, indent+1, "")
 		}
 	}
 
-	printLine(out, "}\n", indent)
+	printLine(w, "}\n", indent)
 }

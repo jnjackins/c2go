@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -50,7 +50,7 @@ func parseVarDecl(line string) *VarDecl {
 	}
 }
 
-func (n *VarDecl) Render() []string {
+func (n *VarDecl) render() []string {
 	theType := resolveType(n.Type)
 	name := n.Name
 
@@ -73,5 +73,5 @@ func (n *VarDecl) Render() []string {
 	return []string{fmt.Sprintf("var %s %s%s", name, theType, suffix), "unknown3"}
 }
 
-func (n *VarDecl) RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string) {
+func (n *VarDecl) renderLine(w io.Writer, functionName string, indent int, returnType string) {
 }

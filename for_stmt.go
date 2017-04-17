@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 )
 
 type ForStmt struct {
@@ -24,7 +24,7 @@ func parseForStmt(line string) *ForStmt {
 	}
 }
 
-func (n *ForStmt) RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string) {
+func (n *ForStmt) renderLine(w io.Writer, functionName string, indent int, returnType string) {
 	children := n.Children
 
 	a := renderExpression(children[0])[0]
@@ -37,12 +37,12 @@ func (n *ForStmt) RenderLine(out *bytes.Buffer, functionName string, indent int,
 	c := renderExpression(children[3])[0]
 
 	if a == "" && b == "" && c == "" {
-		printLine(out, fmt.Sprintf("for {"), indent)
+		printLine(w, fmt.Sprintf("for {"), indent)
 	} else {
-		printLine(out, fmt.Sprintf("for %s; %s; %s {", a, b, c), indent)
+		printLine(w, fmt.Sprintf("for %s; %s; %s {", a, b, c), indent)
 	}
 
-	Render(out, children[4], functionName, indent+1, returnType)
+	render(w, children[4], functionName, indent+1, returnType)
 
-	printLine(out, "}", indent)
+	printLine(w, "}", indent)
 }

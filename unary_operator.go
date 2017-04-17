@@ -34,7 +34,7 @@ func parseUnaryOperator(line string) *UnaryOperator {
 	}
 }
 
-func (n *UnaryOperator) Render() []string {
+func (n *UnaryOperator) render() []string {
 	operator := n.Operator
 	expr := renderExpression(n.Children[0])
 

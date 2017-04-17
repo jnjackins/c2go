@@ -27,7 +27,7 @@ func parsePredefinedExpr(line string) *PredefinedExpr {
 	}
 }
 
-func (n *PredefinedExpr) Render() []string {
+func (n *PredefinedExpr) render() []string {
 	if n.Name == "__PRETTY_FUNCTION__" {
 		// FIXME
 		return []string{"\"void print_number(int *)\"", "const char*"}

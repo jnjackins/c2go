@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 )
 
 type IfStmt struct {
@@ -24,20 +24,20 @@ func parseIfStmt(line string) *IfStmt {
 	}
 }
 
-func (n *IfStmt) RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string) {
+func (n *IfStmt) renderLine(w io.Writer, functionName string, indent int, returnType string) {
 	// TODO: The first two children of an IfStmt appear to always be null.
 	// Are there any cases where they are used?
 	children := n.Children[2:]
 
 	e := renderExpression(children[0])
-	printLine(out, fmt.Sprintf("if %s {", cast(e[0], e[1], "bool")), indent)
+	printLine(w, fmt.Sprintf("if %s {", cast(e[0], e[1], "bool")), indent)
 
-	Render(out, children[1], functionName, indent+1, returnType)
+	render(w, children[1], functionName, indent+1, returnType)
 
 	if len(children) > 2 {
-		printLine(out, "} else {", indent)
-		Render(out, children[2], functionName, indent+1, returnType)
+		printLine(w, "} else {", indent)
+		render(w, children[2], functionName, indent+1, returnType)
 	}
 
-	printLine(out, "}", indent)
+	printLine(w, "}", indent)
 }

@@ -1,6 +1,6 @@
 package main
 
-import "bytes"
+import "io"
 
 type CompoundStmt struct {
 	Address  string
@@ -21,8 +21,8 @@ func parseCompoundStmt(line string) *CompoundStmt {
 	}
 }
 
-func (n *CompoundStmt) RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string) {
+func (n *CompoundStmt) renderLine(w io.Writer, functionName string, indent int, returnType string) {
 	for _, c := range n.Children {
-		Render(out, c, functionName, indent, returnType)
+		render(w, c, functionName, indent, returnType)
 	}
 }

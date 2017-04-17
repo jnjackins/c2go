@@ -19,6 +19,6 @@ func parseBreakStmt(line string) *BreakStmt {
 	}
 }
 
-func (n *BreakStmt) Render() []string {
+func (n *BreakStmt) render() []string {
 	return []string{"break", ""}
 }

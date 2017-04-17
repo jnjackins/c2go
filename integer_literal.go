@@ -25,7 +25,7 @@ func parseIntegerLiteral(line string) *IntegerLiteral {
 	}
 }
 
-func (n *IntegerLiteral) Render() []string {
+func (n *IntegerLiteral) render() []string {
 	literal := n.Value
 
 	// FIXME

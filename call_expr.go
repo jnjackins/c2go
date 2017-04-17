@@ -26,7 +26,7 @@ func parseCallExpr(line string) *CallExpr {
 	}
 }
 
-func (n *CallExpr) Render() []string {
+func (n *CallExpr) render() []string {
 	children := n.Children
 	func_name := renderExpression(children[0])[0]
 

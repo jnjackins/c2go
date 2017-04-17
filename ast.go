@@ -1,25 +1,14 @@
 package main
 
 import (
-	"bytes"
+	"log"
 	"regexp"
 	"strings"
 )
 
-type ExpressionRenderer interface {
-	// TODO: The two arguments returned are the rendered Go and the C type.
-	// This should be made into an appropriate type.
-	Render() []string
-}
-
-type LineRenderer interface {
-	RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string)
-}
-
 func Parse(line string) interface{} {
 	nodeName := strings.SplitN(line, " ", 2)[0]
 	var node interface{}
-
 	switch nodeName {
 	case "AlwaysInlineAttr":
 		node = parseAlwaysInlineAttr(line)
@@ -132,9 +121,8 @@ func Parse(line string) interface{} {
 	case "NullStmt":
 		node = nil
 	default:
-		panic("Unknown node type: '" + line + "'")
+		log.Printf("Warning: unknown node type: %q", line)
 	}
-
 	return node
 }
 
@@ -148,8 +136,8 @@ func groupsFromRegex(rx, line string) map[string]string {
 
 	match := re.FindStringSubmatch(line)
 	if len(match) == 0 {
-		panic("could not match regexp '" + fullRegexp +
-			"' with string '" + line + "'")
+		log.Printf("Warning: could not match regexp %q with string %q", fullRegexp, line)
+		return nil
 	}
 
 	result := make(map[string]string)

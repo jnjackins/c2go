@@ -38,7 +38,7 @@ func parseDeclRefExpr(line string) *DeclRefExpr {
 	}
 }
 
-func (n *DeclRefExpr) Render() []string {
+func (n *DeclRefExpr) render() []string {
 	name := n.Name
 
 	if name == "argc" {

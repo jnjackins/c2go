@@ -23,7 +23,7 @@ func parseParenExpr(line string) *ParenExpr {
 	}
 }
 
-func (n *ParenExpr) Render() []string {
+func (n *ParenExpr) render() []string {
 	a := renderExpression(n.Children[0])
 	return []string{fmt.Sprintf("(%s)", a[0]), a[1]}
 }

@@ -25,7 +25,7 @@ func parseArraySubscriptExpr(line string) *ArraySubscriptExpr {
 	}
 }
 
-func (n *ArraySubscriptExpr) Render() []string {
+func (n *ArraySubscriptExpr) render() []string {
 	children := n.Children
 	return []string{fmt.Sprintf("%s[%s]", renderExpression(children[0])[0],
 		renderExpression(children[1])[0]), "unknown1"}

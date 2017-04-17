@@ -1,6 +1,6 @@
 package main
 
-import "bytes"
+import "io"
 
 type TranslationUnitDecl struct {
 	Address  string
@@ -16,8 +16,8 @@ func parseTranslationUnitDecl(line string) *TranslationUnitDecl {
 	}
 }
 
-func (n *TranslationUnitDecl) RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string) {
+func (n *TranslationUnitDecl) renderLine(w io.Writer, functionName string, indent int, returnType string) {
 	for _, c := range n.Children {
-		Render(out, c, functionName, indent, returnType)
+		render(w, c, functionName, indent, returnType)
 	}
 }

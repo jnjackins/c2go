@@ -33,7 +33,7 @@ func parseMemberExpr(line string) *MemberExpr {
 	}
 }
 
-func (n *MemberExpr) Render() []string {
+func (n *MemberExpr) render() []string {
 	children := n.Children
 
 	lhs := renderExpression(children[0])

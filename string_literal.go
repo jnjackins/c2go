@@ -30,7 +30,7 @@ func parseStringLiteral(line string) *StringLiteral {
 	}
 }
 
-func (n *StringLiteral) Render() []string {
+func (n *StringLiteral) render() []string {
 	return []string{
 		fmt.Sprintf("\"%s\"", strings.Replace(n.Value, "\n", "\\n", -1)),
 		"const char *",

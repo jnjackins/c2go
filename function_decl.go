@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -51,7 +51,7 @@ func parseFunctionDecl(line string) *FunctionDecl {
 	}
 }
 
-func (n *FunctionDecl) RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string) {
+func (n *FunctionDecl) renderLine(w io.Writer, functionName string, indent int, returnType string) {
 	functionName = strings.TrimSpace(n.Name)
 
 	if functionName == "__istype" || functionName == "__isctype" ||
@@ -80,21 +80,21 @@ func (n *FunctionDecl) RenderLine(out *bytes.Buffer, functionName string, indent
 		returnType := getFunctionReturnType(n.Type)
 
 		if functionName == "main" {
-			printLine(out, "func main() {", indent)
+			printLine(w, "func main() {", indent)
 		} else {
-			printLine(out, fmt.Sprintf("func %s(%s) %s {",
+			printLine(w, fmt.Sprintf("func %s(%s) %s {",
 				functionName, strings.Join(args, ", "),
 				resolveType(returnType)), indent)
 		}
 
 		for _, c := range n.Children {
 			if _, ok := c.(*CompoundStmt); ok {
-				Render(out, c, functionName,
+				render(w, c, functionName,
 					indent+1, n.Type)
 			}
 		}
 
-		printLine(out, "}\n", indent)
+		printLine(w, "}\n", indent)
 
 		params := []string{}
 		for _, v := range getFunctionParams(n) {

@@ -25,6 +25,6 @@ func parseFloatingLiteral(line string) *FloatingLiteral {
 	}
 }
 
-func (n *FloatingLiteral) Render() []string {
+func (n *FloatingLiteral) render() []string {
 	return []string{fmt.Sprintf("%f", n.Value), "double"}
 }

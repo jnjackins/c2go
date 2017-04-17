@@ -1,6 +1,6 @@
 package main
 
-import "bytes"
+import "io"
 
 type DeclStmt struct {
 	Address  string
@@ -21,8 +21,8 @@ func parseDeclStmt(line string) *DeclStmt {
 	}
 }
 
-func (n *DeclStmt) RenderLine(out *bytes.Buffer, functionName string, indent int, returnType string) {
+func (n *DeclStmt) renderLine(w io.Writer, functionName string, indent int, returnType string) {
 	for _, child := range n.Children {
-		printLine(out, renderExpression(child)[0], indent)
+		printLine(w, renderExpression(child)[0], indent)
 	}
 }

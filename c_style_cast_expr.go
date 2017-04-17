@@ -23,7 +23,7 @@ func parseCStyleCastExpr(line string) *CStyleCastExpr {
 	}
 }
 
-func (n *CStyleCastExpr) Render() []string {
+func (n *CStyleCastExpr) render() []string {
 	children := n.Children
 	return renderExpression(children[0])
 }

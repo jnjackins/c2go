@@ -25,6 +25,6 @@ func parseEnumDecl(line string) *EnumDecl {
 	}
 }
 
-func (n *EnumDecl) Render() []string {
+func (n *EnumDecl) render() []string {
 	return []string{"", ""}
 }
